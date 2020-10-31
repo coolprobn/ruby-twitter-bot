@@ -96,7 +96,6 @@ module Twitter
     def re_tweet
       stream_client.filter(:track => HASHTAGS_TO_WATCH.join(',')) do |tweet|
         if should_re_tweet?(tweet)
-          byebug
           rest_client.retweet tweet
         end
       end
