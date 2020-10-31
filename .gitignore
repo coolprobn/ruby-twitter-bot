@@ -1,0 +1,11 @@
+# Ignore application configuration
+config/application.yml
+
+# Ignore byebug history
+.byebug_history
+
+# Ignore aws instance pem file
+ruby-twitter-bot.pem
+
+# Ignore IDE folders
+.idea/
