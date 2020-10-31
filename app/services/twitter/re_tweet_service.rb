@@ -97,6 +97,8 @@ module Twitter
       stream_client.filter(:track => HASHTAGS_TO_WATCH.join(',')) do |tweet|
         if should_re_tweet?(tweet)
           rest_client.retweet tweet
+
+          puts 'Retweeted successfully!'
         end
       end
     rescue StandardError => e
