@@ -3,3 +3,9 @@ defaults: &defaults
   CONSUMER_SECRET: ''
   ACCESS_TOKEN: ''
   ACCESS_TOKEN_SECRET: ''
+
+development:
+  <<: *defaults
+
+production:
+  <<: *defaults
