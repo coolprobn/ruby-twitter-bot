@@ -29,7 +29,7 @@ module Twitter
     private
 
     MAXIMUM_HASHTAG_COUNT = 5
-    HASHTAGS_TO_WATCH = %w[#rails #ruby #Ruby #RubyOnRails #Rails]
+    HASHTAGS_TO_WATCH = %w[#rails #ruby #RubyOnRails]
 
     def twitter_api_config
       {
@@ -71,7 +71,7 @@ module Twitter
       includes_allowed_hashtags = false
 
       hashtags(tweet).each do |hashtag|
-        if HASHTAGS_TO_WATCH.include?(hashtag[:text])
+        if HASHTAGS_TO_WATCH.map(&:upcase).include?(hashtag[:text]&.upcase)
           includes_allowed_hashtags = true
 
           break
