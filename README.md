@@ -26,3 +26,4 @@ Twitter bot which retweets #rails and #ruby hashtags (case insensitive). Develop
 # TODO
 
 1. Allow to update the hashtags from `application.yml`.
+2. Create initializer file and add gem require and figaro config to it.
