@@ -21,8 +21,11 @@ module Twitter
     end
 
     def perform
+      rest_client = configure_rest_client
+      stream_client = configure_stream_client
+
       while true
-        re_tweet
+        re_tweet(rest_client, stream_client)
       end
     end
 
@@ -40,11 +43,11 @@ module Twitter
       }
     end
 
-    def rest_client
+    def configure_rest_client
       Twitter::REST::Client.new(config)
     end
 
-    def stream_client
+    def configure_stream_client
       Twitter::Streaming::Client.new(config)
     end
 
@@ -93,18 +96,18 @@ module Twitter
       tweet?(tweet) && english_tweet?(tweet) && !retweet?(tweet) && allowed_hashtag_count?(tweet) && !sensitive_tweet?(tweet) && allowed_hashtags?(tweet)
     end
 
-    def re_tweet
+    def re_tweet(rest_client, stream_client)
       stream_client.filter(:track => HASHTAGS_TO_WATCH.join(',')) do |tweet|
         if should_re_tweet?(tweet)
           rest_client.retweet tweet
 
-          puts 'Retweeted successfully!'
+          puts "[#{Time.now}] Retweeted successfully!\n"
         end
       end
     rescue StandardError => e
       puts "=========Error========\n#{e.message}"
 
-      puts "Waiting for 60 seconds .... \n"
+      puts "[#{Time.now}] Waiting for 60 seconds ....\n"
 
       sleep 60
     end
