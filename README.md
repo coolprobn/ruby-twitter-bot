@@ -17,7 +17,12 @@ Twitter bot which retweets #rails and #ruby hashtags (case insensitive). Develop
 
    - Update constant `HASHTAGS_TO_WATCH`
 
+5. Run bot in background and log to a file
+
+   `nohup ruby app/services/twitter/re_tweet_service.rb >> twitter_bot.log 2>&1 &`
+   
+   **NOTE:** If you have deployed bot to ubuntu server, you need to restart the bot after server restart because it kills the job created by `nohup` 
+
 # TODO
 
 1. Allow to update the hashtags from `application.yml`.
-2. Add logger and log info and errors to separate file.
