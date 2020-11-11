@@ -25,13 +25,15 @@ module Twitter
       stream_client = configure_stream_client
 
       while true
+        puts 'Starting to Retweet 3, 2, 1 ... NOW!'
+
         re_tweet(rest_client, stream_client)
       end
     end
 
     private
 
-    MAXIMUM_HASHTAG_COUNT = 5
+    MAXIMUM_HASHTAG_COUNT = 10
     HASHTAGS_TO_WATCH = %w[#rails #ruby #RubyOnRails]
 
     def twitter_api_config
@@ -44,10 +46,14 @@ module Twitter
     end
 
     def configure_rest_client
+      puts 'Configuring Rest Client'
+
       Twitter::REST::Client.new(config)
     end
 
     def configure_stream_client
+      puts 'Configuring Stream Client'
+
       Twitter::Streaming::Client.new(config)
     end
 
@@ -62,10 +68,6 @@ module Twitter
       tweet.is_a?(Twitter::Tweet)
     end
 
-    def english_tweet?(tweet)
-      tweet.lang.eql?('en')
-    end
-
     def retweet?(tweet)
       tweet.retweet?
     end
@@ -74,7 +76,7 @@ module Twitter
       includes_allowed_hashtags = false
 
       hashtags(tweet).each do |hashtag|
-        if HASHTAGS_TO_WATCH.map(&:upcase).include?(hashtag[:text]&.upcase)
+        if HASHTAGS_TO_WATCH.map(&:upcase).include?("##{hashtag[:text]&.upcase}")
           includes_allowed_hashtags = true
 
           break
@@ -93,11 +95,13 @@ module Twitter
     end
 
     def should_re_tweet?(tweet)
-      tweet?(tweet) && english_tweet?(tweet) && !retweet?(tweet) && allowed_hashtag_count?(tweet) && !sensitive_tweet?(tweet) && allowed_hashtags?(tweet)
+      tweet?(tweet) && !retweet?(tweet) && allowed_hashtag_count?(tweet) && !sensitive_tweet?(tweet) && allowed_hashtags?(tweet)
     end
 
     def re_tweet(rest_client, stream_client)
       stream_client.filter(:track => HASHTAGS_TO_WATCH.join(',')) do |tweet|
+        puts "\nCaught the tweet -> #{tweet.text}"
+
         if should_re_tweet?(tweet)
           rest_client.retweet tweet
 
