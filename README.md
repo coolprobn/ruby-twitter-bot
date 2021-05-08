@@ -17,11 +17,22 @@ Twitter bot which retweets #rails and #ruby hashtags (case insensitive). Develop
 
    - Update constant `HASHTAGS_TO_WATCH`
 
-5. Run bot in background and log to a file
+5. Run bot in background
 
-   `nohup ruby app/services/twitter/re_tweet_service.rb >> twitter_bot.log 2>&1 &`
+   ```
+    # Create a new shell
+    $ screen -S twitter-bot
+
+    # run the twitter bot (you should be inside project root)
+    $ ruby app/services/twitter/re_tweet_service.rb 
+    
+    # Detach ruby bot and move to original screen
+    $ CTRL + a + d
+   ```
    
-   **NOTE:** If you have deployed bot to ubuntu server, you need to restart the bot after server restart because it kills the job created by `nohup` 
+   Ref: [Run Ruby script in the background](https://stackoverflow.com/a/6391255/9359123)
+
+   **NOTE:** If you have deployed bot to remote server, you need to restart the bot after server restart because it kills the script running in background 
 
 # TODO
 
