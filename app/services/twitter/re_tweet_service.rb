@@ -33,7 +33,7 @@ module Twitter
 
     private
 
-    MAXIMUM_HASHTAG_COUNT = 10
+    MAXIMUM_HASHTAG_COUNT = 3
     HASHTAGS_TO_WATCH = %w[#rails #ruby #RubyOnRails]
 
     def twitter_api_config
