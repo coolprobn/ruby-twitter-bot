@@ -9,3 +9,5 @@ ruby-twitter-bot.pem
 
 # Ignore IDE folders
 .idea/
+
+.DS_Store
