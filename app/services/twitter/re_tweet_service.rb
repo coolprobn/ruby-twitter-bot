@@ -14,20 +14,20 @@ Figaro.load
 
 module Twitter
   class ReTweetService
-    attr_reader :config
-
     def initialize
       @config = twitter_api_config
+      @rest_client = configure_rest_client
     end
 
     def perform
-      rest_client = configure_rest_client
       stream_client = configure_stream_client
 
       while true
         puts 'Starting to Retweet 3, 2, 1 ... NOW!'
 
-        re_tweet(rest_client, stream_client)
+        fetch_and_store_sensitive_users
+
+        re_tweet(stream_client)
       end
     end
 
@@ -35,6 +35,9 @@ module Twitter
 
     MAXIMUM_HASHTAG_COUNT = 3
     HASHTAGS_TO_WATCH = %w[#rails #ruby #RubyOnRails]
+
+    attr_reader :config, :rest_client
+    attr_accessor :sensitive_user_ids, :last_fetched_on
 
     def twitter_api_config
       {
@@ -55,6 +58,18 @@ module Twitter
       puts 'Configuring Stream Client'
 
       Twitter::Streaming::Client.new(config)
+    end
+
+    def fetch_and_store_sensitive_users
+      blocked_user_ids = rest_client.blocked_ids.collect(&:to_i)
+      muted_user_ids = rest_client.muted_ids.collect(&:to_i)
+
+      @sensitive_user_ids = [blocked_user_ids, muted_user_ids].flatten.uniq
+      @last_fetched_on = Time.now
+    end
+
+    def sensitive_users_fetch_time_expired?
+      Time.now.hour != last_fetched_on.hour
     end
 
     def hashtags(tweet)
@@ -94,13 +109,21 @@ module Twitter
       tweet.possibly_sensitive?
     end
 
-    def should_re_tweet?(tweet)
-      tweet?(tweet) && !retweet?(tweet) && allowed_hashtag_count?(tweet) && !sensitive_tweet?(tweet) && allowed_hashtags?(tweet)
+    def from_muted_or_blocked_user?(tweet)
+      user_id = tweet.user.id
+
+      sensitive_user_ids.include?(user_id)
     end
 
-    def re_tweet(rest_client, stream_client)
+    def should_re_tweet?(tweet)
+      tweet?(tweet) && !retweet?(tweet) && allowed_hashtag_count?(tweet) && !sensitive_tweet?(tweet) && allowed_hashtags?(tweet) && !from_muted_or_blocked_user?(tweet)
+    end
+
+    def re_tweet(stream_client)
       stream_client.filter(:track => HASHTAGS_TO_WATCH.join(',')) do |tweet|
         puts "\nCaught the tweet -> #{tweet.text}"
+
+        fetch_and_store_sensitive_users if sensitive_users_fetch_time_expired?
 
         if should_re_tweet?(tweet)
           rest_client.retweet tweet
