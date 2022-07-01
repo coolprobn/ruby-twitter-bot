@@ -23,11 +23,14 @@ Twitter bot which retweets #rails and #ruby hashtags (case insensitive). Develop
     # Create a new shell
     $ screen -S twitter-bot
 
-    # run the twitter bot (you should be inside project root)
+    # Run the twitter bot (you should be inside project root)
     $ ruby app/services/twitter/re_tweet_service.rb 
     
     # Detach ruby bot and move to original screen
     $ CTRL + a + d
+    
+    # Return to the screen where bot is running
+    $ screen -r twitter-bot
    ```
    
    Ref: [Run Ruby script in the background](https://stackoverflow.com/a/6391255/9359123)
